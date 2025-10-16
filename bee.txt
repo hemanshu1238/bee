@@ -1,0 +1,281 @@
+#GET AND POST LOGIN SIGNUP
+const http=require('http')
+const url=require('url')
+const fs=require('fs')
+const port=3000;
+const user=[];
+const querystring=require('querystring')
+
+
+const server=http.createServer((req,res)=>{
+const path=url.parse(req.url).pathname;
+const method=req.method;
+
+
+if(method==='GET'&& path==='/login'){
+    fs.readFile('./login.html',(err,data)=>{
+        if(err){
+            res.statusCode=500;
+            res.end('Error loding data');
+        }
+        else{
+            res.statusCode=200;
+            res.setHeader('Content-Type', 'text/html');
+            res.end(data);
+        }
+    });
+}
+
+else if(method==='POST'&& path==='/login'){
+    let body='';
+    req.on('data',chunk=>{
+        body+=chunk.toString();
+    });
+
+    req.on('end',()=>{
+        const formdata=querystring.parse(body);
+        const username= formdata.username;
+        const password= formdata.password;
+
+        const existingUser = user.find(u => u.username === username && u.password === password);
+
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'text/html');
+        if (existingUser) {
+            res.end(`<h1>Welcome, ${username}!</h1>`);
+        } else {
+            res.end(`<h1>Invalid credentials</h1><a href="/login">Try again</a>`);
+        }
+    })
+}
+
+else if(method==='GET'&&path==='/signup'){
+    fs.readFile('./signup.html',(err,data)=>{
+        if(err){
+            res.statusCode = 500;
+            res.end('Error loading signup page');
+        }
+        else{
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'text/html');
+            res.end(data);
+
+        }
+    })
+}
+
+else if(method=='POST'&&path==='/signup'){
+    let body='';
+    req.on('data',chunk=>{
+        body+=chunk
+        
+    })
+    req.on('end',()=>{
+        const formdata=querystring.parse(body);
+        const username=formdata.username;
+        const password=formdata.password;
+        user.push({username ,password});
+        res.end('welcome')
+    })
+}
+
+else{
+    res.statusCode=404;
+    res.end('Page not found');
+}
+})
+server.listen(port,()=>{
+    console.log('server is running');
+})
+
+
+
+
+#EXPRESS server
+const express = require('express')
+const fs =  require('fs')
+const app =express()
+app.listen(3000,()=>{
+    console.log("Server is running ")
+})
+app.get('/about',(req ,res)=>{
+    res.sendFile(__dirname+'/about.html')
+})
+app.get('/',(req ,res)=>{
+    fs.readFile('./index.html','utf-8',(err,data)=>{
+        if(err){
+            res.sendStatus(500).send("Server error")
+        }
+        else{
+            res.send(data)
+        }
+    })
+})
+
+
+
+#calculater
+const http = require("http");
+const fs = require("fs");
+const url = require("url");
+const querystring = require("querystring");
+
+
+const server = http.createServer((req, res) => {
+  if (req.method === "GET" && req.url === "/calculator") {
+    fs.readFile("./cal.html", "utf-8", (err, data) => {
+      if (err) {
+        res.writeHead(500, { "Content-Type": "text/plain" });
+        res.end("Internal Server Error");
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end(data);
+    });
+  } 
+  
+  else if (req.method == "POST" && req.url.startsWith("/calculate")) {
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+    });
+    req.on("end", () => {
+      console.log(body);
+      const { num1, num2, operation } = querystring.parse(body);
+      const result = calculate(+num1, +num2, operation);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ result }));
+    });
+  } else {
+    res.writeHead(404, { "Content-Type": "text/plain" });
+    res.end("Not Found");
+  }
+});
+
+server.listen(3000, () => {
+  console.log("Server is running on http://localhost:3000");
+});
+
+function calculate(num1, num2, operation) {
+  switch (operation) {
+    case "add":
+      return num1 + num2;
+    case "subtract":
+      return num1 - num2;
+    case "multiply":
+      return num1 * num2;
+    case "divide":
+      return num2 !== 0 ? num1 / num2 : "Division by zero error";
+    default:
+      return "Invalid operation";
+  }
+}
+
+
+
+#fs
+const fs = require('fs');
+
+fs.readFile('file.txt', 'utf8', (err, data) => {
+    if (err) {
+        console.error(err);
+    } else {
+        console.log(data);
+    }
+});
+
+try{
+    const data = fs.readFileSync('file.txt', 'utf8');
+    console.log(data);
+} catch (err) {
+    console.error(err);
+}
+
+fs.writeFile('new.txt', 'Hello, world!', (err) => {
+    if (err) {
+        console.error(err);
+    } else {
+        console.log('File written successfully');
+    }
+});
+
+try{
+    fs.writeFileSync('new.txt', 'Hello, world! Sync');
+    console.log('File written successfully');
+} catch (err) {
+    console.error(err);
+}
+
+fs.appendFile('new.txt', ' Hello, world! Append', (err) => {
+    if (err) {
+        console.error(err);
+    } else {
+        console.log('File appended successfully');
+    }
+});
+
+try{
+    fs.appendFileSync('new.txt', ' Hello, world! Append Sync');
+    console.log('File appended successfully');
+} catch (err) {
+    console.error(err);
+}
+
+fs.unlink('new.txt', (err) => {
+    if (err) {
+        console.error(err);
+    } else {
+        console.log('File deleted successfully');
+    }
+});
+try{
+    fs.unlinkSync('new.txt');
+    console.log('File deleted successfully');
+} catch (err) {
+    console.error(err);
+}
+
+#array method 
+
+
+map
+const numbers = [1, 2, 3, 4, 5];
+
+// Multiply every number by 2
+const doubled = numbers.map(num => num * 2);
+
+console.log(doubled); // 👉 [2, 4, 6, 8, 10]
+
+
+
+filter
+const numbers = [10, 15, 20, 25, 30];
+
+// Keep numbers greater than 20
+const greaterThan20 = numbers.filter(num => num > 20);
+
+console.log(greaterThan20); // 👉 [25, 30]
+
+
+
+find
+const users = [
+  { id: 1, name: 'Alice' },
+  { id: 2, name: 'Bob' },
+  { id: 3, name: 'Charlie' }
+];
+
+// Find the user with id 2
+const user = users.find(u => u.id === 2);
+
+console.log(user); // 👉 { id: 2, name: 'Bob' }
+
+
+
+for each
+const fruits = ['apple', 'banana', 'cherry'];
+
+// Print each fruit
+fruits.forEach(fruit => {
+  console.log('I like', fruit);
+});
