@@ -52,3 +52,9 @@ idna==3.7
 requests==2.31.0
 certifi==2024.7.4
 PyYAML==6.0.1
+ARTIFACTS
+certifi Version: 2023.5.7
+flask Version: 2.2.5
+idna Version: 3.3
+requests Version: 2.31.0
+urllib Version: 1.26.16
