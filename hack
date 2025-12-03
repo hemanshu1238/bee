@@ -580,4 +580,5 @@ Visit Here http://157.245.104.92:5000 to Cafe !!!
     }
     )()
 }
-)();
+)(); 
+flag{qBEQ3NhEnwK4sypmuSxBJzRqpxZLRXxe
